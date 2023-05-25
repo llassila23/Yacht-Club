@@ -7,7 +7,12 @@
 
 
 public class Main {
+    public static void main(String[]args){
 
+        Manager tree = new Manager(); // new instance of manager
+
+        //tree.Manager();
+    }
     /* create a new instance of Manager
      * 
      * Call User Interface Loops:
