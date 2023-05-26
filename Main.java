@@ -10,8 +10,15 @@ public class Main {
     public static void main(String[]args){
 
         Manager tree = new Manager(); // new instance of manager
+        tree.Header();
 
-        //tree.Manager();
+        tree.addNode();
+
+        tree.addNode();
+
+        tree.print();
+
+        
     }
     /* create a new instance of Manager
      * 

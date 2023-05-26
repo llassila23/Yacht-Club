@@ -22,7 +22,7 @@ public class TreeNode {
     TreeNode right; 
 
     // new node with no children nodes
-    public TreeNode( int SEARCH_KEY, String FIRST_NAME, String LAST_NAME, String PHONE_NUM, 
+    /*public TreeNode( int SEARCH_KEY, String FIRST_NAME, String LAST_NAME, String PHONE_NUM, 
                     String ADDRESS, String CITY, String STATE, String ZIP){
 
             this.SEARCH_KEY = SEARCH_KEY;
@@ -38,7 +38,7 @@ public class TreeNode {
             this.left = null;
             this.right = null; 
 
-    }
+    }*/
     // new node with children nodes
     public TreeNode( int SEARCH_KEY, String FIRST_NAME, String LAST_NAME, String PHONE_NUM, 
                     String ADDRESS, String CITY, String STATE, String ZIP, TreeNode left, TreeNode right){
