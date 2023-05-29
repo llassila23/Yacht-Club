@@ -25,6 +25,8 @@ public class Manager {
     private String state = null;
     private String zip = null;
 
+    boolean add = true; // add randNum when true, subract when false
+
     //ArrayList<Integer>  keySet = new ArrayList<Integer>(); // will contain all keys
 
     Scanner input = new Scanner(System.in);
@@ -65,7 +67,7 @@ public class Manager {
         Random rand = new Random();
         int randNum = rand.nextInt(50); // random number from 0 to 15 to help seperate key values
 
-
+       
         // char val for initials
         char fN = fName.charAt(0);
         char lN = lName.charAt(0);
@@ -88,7 +90,18 @@ public class Manager {
             num10 = phoneNum.charAt(6);
         }
 
-        key = (fN-0) + (lN-0) + (num8 -0) + (num9 - 0) + (num10 - 0) + randNum; // makes a key for that given entry
+        if(add){
+
+            key = (fN-0) + (lN-0) + (num8 -0) + (num9 - 0) + (num10 - 0) + randNum; // makes a key for that given entry
+
+            add = !add; //alternate
+
+        } else{
+        
+            key = (fN-0) + (lN-0) + (num8 -0) + (num9 - 0) + (num10 - 0) - randNum; 
+
+            add = !add; 
+        }
         System.out.println(key);
 
         //keySet.add(key); // add key to keySet
@@ -103,30 +116,25 @@ public class Manager {
         getData(); // take user input
         key = genKey(); // generate key given user data
 
-        // does not work. current is set to null everytime
-
-
         TreeNode current = root; // start at top
-
-        
 
         if(key < root.SEARCH_KEY){ // if less than root go to left
 
             if(root.left == null){ // if first node, no need to search, just add to root.
-                root.left = new TreeNode(key, lName, fName, phoneNum, address, city, state, zip, null, null);
+                root.left = new TreeNode(key, fName, lName, phoneNum, address, city, state, zip, null, null);
             }else{
             current = root.left; 
             traverseAndAdd(current);
             }
         }else if(key > root.SEARCH_KEY){ // greater than root go to right
             if(root.right == null){
-                root.right = new TreeNode(key, lName, fName, phoneNum, address, city, state, zip, null, null);
+                root.right = new TreeNode(key, fName, lName, phoneNum, address, city, state, zip, null, null);
             }else{
             current = root.right; 
             traverseAndAdd(current);
             }
         } 
-        key = 0; // reset key to be zero
+        key = 0; // reset key to zero
     }
 
     private void getData() {
@@ -154,15 +162,22 @@ public class Manager {
     // postcondition: new node has been added
     private void traverseAndAdd(TreeNode current) { // called by addNode and traverses through the subtrees and adds a new node 
 
-       // if (current == null){ // case that there is only the root node
-        //    current = new TreeNode(key, fName, lName, phoneNum, address, city, state, zip, null, null);
-        //} // if done, while loop and if else will not run b.c current.L&R are null & key == current.Search_Key
-
+        // case where duplicate key
+        if(key == current.SEARCH_KEY){
+            key--;
+        }
         // traverse until null space is found
+
         while(current.left!= null || current.right != null){
             if(key < current.SEARCH_KEY){
+                if(current.left == null){
+                    break;
+                }
                 current = current.left; // go to left if smaller
             } else if (key > current.SEARCH_KEY){
+                if(current.right == null){
+                    break;
+                }
                 current = current.right; // go to right if bigger
             }
         } // end traversing while loop
@@ -179,17 +194,15 @@ public class Manager {
         TreeNode current = root;
 
 
-        //if(want print in order){}
-        // recursive in order traversal
-        printInO(current);
+        //if(want print Pre order){}
+        // recursive Pre order traversal
 
-        
-
+        //printPreO(current);
 
 
-        
-
-
+        leftPostO(root);
+        rightPostO(root);
+        printNode(root); 
         // every key created goes into an array list
         // can sort this array list for the given traversal types
         // search() will find the node at that key
@@ -199,23 +212,178 @@ public class Manager {
     }
 
     
-    private void printInO(TreeNode current){
+    private void printPreO(TreeNode current){
 
         try {
 
-            printInO(current.left);
+            printPreO(current.left);
             printNode(current);
-            printInO(current.right);
+            printPreO(current.right);
 
         } catch (Exception NullPointerException) {
             return;
         }
+    }
+
+    // Precondition: current = root
+    private void leftPostO(TreeNode root ){
+        TreeNode current = root;
+        TreeNode leftSub = null;
+
+        // cases to return
+        if(root.left == null){
+            return;
+        }
+
+        try{
+         leftSub = root.left; 
+        }catch(Exception nullPointerException){
+        // leftSub = root; 
+            return;
+        }
+
+
+        int subHeightL = 0; // left side height
+        int subHeightR = 0; // right side height 
+
+        // find height of left most path of left subtree
+        if (leftSub.left != null){
+            current = leftSub.left; // convert current to leftSub chain
+            subHeightL++;
+            while(current.left != null){ // continue on chain if possible
+                subHeightL ++;
+                current = current.left; 
+            }
+             
+        }
+        // find height of right most path of left sub tree
+        if(leftSub.right != null){
+            current = leftSub.right;
+            subHeightR++;
+            while(current.right!= null){
+                subHeightR ++;
+                current = current.right;
+            }
+        }
+        
+        // print them
+        current = leftSub;
+        int i = 0;
+        while(subHeightL >=0){
+            while(subHeightL>i){
+                current = current.left;
+                i++;
+            }
+            try{ // have to do seperately to be able to try both left and right
+                printNode(current.left);    
+            }catch(Exception NullPointerException){}
+           try{
+            printNode(current.right);
+           }catch(Exception NullPointerException){}
+            subHeightL --;
+            current = leftSub; //start at top of left subtree again.
+        }
+
+        i = 0; 
+        while(subHeightR >0){
+            while(subHeightR>i){
+                current = current.right;
+                i++;
+            }
+            try{
+                printNode(current.left);    
+            }catch(Exception NullPointerException){}
+           try{
+            printNode(current.right);
+           }catch(Exception NullPointerException){}
+            subHeightR --;
+            current = leftSub; //start at top of left subtree again.
+        }
+
+        printNode(leftSub);
+    } // end Print left Side Post Order
+
+     // Precondition: current = root
+     private void rightPostO(TreeNode root ){
+        
+         TreeNode current = root;
+         TreeNode rightSub = null;
+
+         // cases to exit
+
+         if (root.right == null){
+            return;
+         }
+
+         try{
+         rightSub = root.right;
+         }catch(Exception NullPointerException){
+          //  rightSub = root;
+            return;
+         }
 
 
         
-    }
 
+         int subHeightL = 0; // left side height
+         int subHeightR = 0; // right side height 
 
+         // find height of left most path of left subtree
+         if (rightSub.left != null){
+             current = rightSub.left;
+             subHeightL++;
+             while(current.left != null){
+                 subHeightL ++;
+                 current = current.left; 
+             }
+              
+         }
+         // find height of right most path of left sub tree
+         if(rightSub.right != null){
+             current = rightSub.right;
+             subHeightR++;
+             while(current.right!= null){
+                 subHeightR ++;
+                 current = current.right;
+             }
+         }
+         
+         // print them
+         current = rightSub;
+         int i = 0;
+         while(subHeightL >0){
+            while(subHeightL>i){
+                 current = current.left;
+                 i++;
+             }
+            try{
+                 printNode(current.left);    
+             }catch(Exception NullPointerException){}
+            try{
+             printNode(current.right);
+            }catch(Exception NullPointerException){}
+
+             subHeightL --;
+             current = rightSub; //start at top of right subtree again.
+         }
+
+         i = 0; 
+         while(subHeightR >0){
+            while(subHeightR>i){
+                 current = current.right;
+                 i++;
+             }
+            try{
+                 printNode(current.left);    
+             }catch(Exception NullPointerException){}
+            try{
+             printNode(current.right);
+            }catch(Exception NullPointerException){}
+             subHeightR --;
+             current = rightSub; //start at top of right subtree again.
+         }
+         printNode(rightSub);
+     } // end Print right Side Post Order
 
     private void printNode(TreeNode current){
         System.out.println();
