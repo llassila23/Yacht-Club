@@ -22,7 +22,7 @@ public class Main {
         int choice = 0;
         do{
         tree.addNode();
-        System.out.println("Enter 1 to add a new member, enter 2 to exit: ");
+        System.out.println("Enter 1 to add a new member, enter 2 to print: ");
         choice = input.nextInt();
         }while(choice == 1);
 

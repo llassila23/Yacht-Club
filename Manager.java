@@ -6,7 +6,7 @@
  */
 
  
-import java.util.ArrayList;
+import java.util.*; // array list, and collections.sort method
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -230,8 +230,8 @@ public class Manager {
 
         try {
 
-            printPreO(current.left);
             printNode(current);
+            printPreO(current.left);
             printPreO(current.right);
 
         } catch (Exception NullPointerException) {
@@ -240,6 +240,7 @@ public class Manager {
     }
 
     // Precondition: current = root
+    //Note: This only works reliably when tree is balanced
     private void leftPostO(TreeNode root ){
         TreeNode current = root;
         TreeNode leftSub = null;
@@ -416,17 +417,10 @@ public class Manager {
 
     private void inOrder(TreeNode root)throws NullPointerException{
         // sort key list
-        TreeNode current = root;
-        int i = 0;
-        int temp = 0;
-       
-        for(i = 0; i< keyList.size(); i++){ // sort keyList
-            if(keyList.get(i)>keyList.get(i+1)){
-                temp = keyList.get(i);
-                keyList.add(i, keyList.get(i+1));
-                keyList.add(i+1, temp);
-            }
-        }
+        TreeNode current = root;       
+        // sort using collections class
+        // Note: From scratch method was not working and had to make a deadline...
+        Collections.sort(keyList);
         // precondition: keyList is sorted
         for(int k: keyList){
             
@@ -456,13 +450,13 @@ public class Manager {
         while (searchKey != current.SEARCH_KEY){
 
             if(searchKey < current.SEARCH_KEY){
-                while(current.left != null){
+                try{
                     current = current.left;
-                }             
+                }catch(Exception NullPointerException) {};          
             }else if(searchKey > current.SEARCH_KEY){
-                while (current.right != null){
+                try{
                     current = current.right;
-                }
+                }catch(Exception NullPointerException) {};    
             }
         }
         printNode(current);
