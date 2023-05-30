@@ -199,7 +199,9 @@ public class Manager {
         int choice = 0; 
         do{
         System.out.println("Enter 1 to print directory in Pre Order, 2 - Post Order, 3 - In Order");
+        System.out.println("Enter 4 to search.");
         choice = input.nextInt();
+        
 
         switch(choice){
             case 1:
@@ -215,7 +217,7 @@ public class Manager {
             break;
             case 3:
         // iterative in order traversal
-            inOrder(root);
+            printInOrder(root);
             break;
 
             default:
@@ -401,7 +403,6 @@ public class Manager {
      } // end Print right Side Post Order
 
     private void printNode(TreeNode current){
-        System.out.println();
 
         System.out.print(current.SEARCH_KEY +"" + " ");
         System.out.print(current.FIRST_NAME + " ");
@@ -415,9 +416,18 @@ public class Manager {
 
     }
 
-    private void inOrder(TreeNode root)throws NullPointerException{
-        // sort key list
-        TreeNode current = root;       
+    private void printInOrder(TreeNode root)throws NullPointerException{
+    
+        TreeNode current = root;
+        printInOrder(current.left);
+        printNode(current);
+        printInOrder(current.right);
+
+
+// Leaving the following code to show my attempt at iteration. Due to time I decided
+// to switch to recursion.
+/*         // sort key list
+        //TreeNode current = root;       
         // sort using collections class
         // Note: From scratch method was not working and had to make a deadline...
         Collections.sort(keyList);
@@ -433,16 +443,19 @@ public class Manager {
             if(k == current.SEARCH_KEY){ // print that node
                 printNode(current);
             }
-            
-        } // end for each   
-    } // end print node
+        } // end for each 
+*/
+    } // end printIO
 
     public void search()throws NullPointerException{
-        System.out.println("Enter the First Name (Case Sensitive): ");
+        int searchKey = 0;
+        int choice = 0;
+        do{
+        System.out.println("To Search, Enter First Name (Case Sensitive): ");
 
         String name = input.next();
 
-       int searchKey = 0;
+       
        searchKey = keySet.get(name);
        
         TreeNode current = root;
@@ -462,11 +475,11 @@ public class Manager {
         printNode(current);
 
         // begin menu here to keep current set to correct node
-        int choice = 0;
-        do{
+        
+        
             System.out.println("Press 1 to edit, 2 to delete, 3 to exit search: ");
             choice = input.nextInt(); 
-        }while(choice != 1 && choice != 2);
+        
         
         switch(choice){
             case 1:
@@ -481,6 +494,7 @@ public class Manager {
             default:
                 return;
         }// end switch case
+        }while(choice != 1 && choice != 2);
     }// end search
 
     private void editNode(TreeNode current){
