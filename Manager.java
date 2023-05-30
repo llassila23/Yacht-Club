@@ -6,7 +6,8 @@
  */
 
  
-//import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -27,7 +28,8 @@ public class Manager {
 
     boolean add = true; // add randNum when true, subract when false
 
-    //ArrayList<Integer>  keySet = new ArrayList<Integer>(); // will contain all keys
+    HashMap<String,Integer>  keySet = new HashMap<String,Integer>(); // for search function
+    ArrayList<Integer> keyList = new ArrayList<Integer>(); // for iterative in order print function
 
     Scanner input = new Scanner(System.in);
 
@@ -104,7 +106,8 @@ public class Manager {
         }
         System.out.println(key);
 
-        //keySet.add(key); // add key to keySet
+        keySet.put(fName, key);
+        keyList.add(key);
         return key;
         // reset key to zero after it is used to make a new node
 
@@ -191,25 +194,36 @@ public class Manager {
     }// end traverseAndAdd
 
     public void print(){ // method to print tree in different ways
-        TreeNode current = root;
+        
+        
+        int choice = 0; 
+        do{
+        System.out.println("Enter 1 to print directory in Pre Order, 2 - Post Order, 3 - In Order");
+        choice = input.nextInt();
 
-
-        //if(want print Pre order){}
+        switch(choice){
+            case 1:
         // recursive Pre order traversal
+                TreeNode current = root;
+                printPreO(current);
+            break;
+            case 2:
+        // iterative post order traversal
+                leftPostO(root);
+                rightPostO(root);
+                printNode(root);
+            break;
+            case 3:
+        // iterative in order traversal
+            inOrder(root);
+            break;
 
-        //printPreO(current);
+            default:
+            return;
+        }// end switch
+    }while(choice == 1 || choice == 2 || choice == 3);
 
-
-        leftPostO(root);
-        rightPostO(root);
-        printNode(root); 
-        // every key created goes into an array list
-        // can sort this array list for the given traversal types
-        // search() will find the node at that key
-        // printNode(said node with said key)
-
-
-    }
+    }// end print main, sub methods begin below
 
     
     private void printPreO(TreeNode current){
@@ -400,29 +414,183 @@ public class Manager {
 
     }
 
-    /* create an instance of the TreeNode Object
-     * run a constructor to start a new TreeNode (maybe a "Administator" person for first entry)
-     * Series of strings for data entry
-     * Take data from user
-     * Compute a Key using the ASCII vals of First and Last Initial + last 4 of Phone num
-     * Make a new node with this data and key
-     *      Traverse tree method
-     *      add method
-     * Search and edit function: 
-     *      traverse, print, edit a component of the node
-     * delete function
-     * print:
-     *      by key in ascending order, 
-     *      by subtrees left to right (pre order)
-     *      left to right (in order)
-     *      left right root (post order)
-     * 
-     *      
-     *      
-     * 
-     * 
-     *
-     * 
-     */
-    
+    private void inOrder(TreeNode root)throws NullPointerException{
+        // sort key list
+        TreeNode current = root;
+        int i = 0;
+        int temp = 0;
+       
+        for(i = 0; i< keyList.size(); i++){ // sort keyList
+            if(keyList.get(i)>keyList.get(i+1)){
+                temp = keyList.get(i);
+                keyList.add(i, keyList.get(i+1));
+                keyList.add(i+1, temp);
+            }
+        }
+        // precondition: keyList is sorted
+        for(int k: keyList){
+            
+            while(k < current.SEARCH_KEY && current.left != null){ // find node with key k
+                current = current.left;
+            }
+            while(k>current.SEARCH_KEY && current.right != null){
+                current = current.right;
+            }
+            if(k == current.SEARCH_KEY){ // print that node
+                printNode(current);
+            }
+            
+        } // end for each   
+    } // end print node
+
+    public void search()throws NullPointerException{
+        System.out.println("Enter the First Name (Case Sensitive): ");
+
+        String name = input.next();
+
+       int searchKey = 0;
+       searchKey = keySet.get(name);
+       
+        TreeNode current = root;
+        
+        while (searchKey != current.SEARCH_KEY){
+
+            if(searchKey < current.SEARCH_KEY){
+                while(current.left != null){
+                    current = current.left;
+                }             
+            }else if(searchKey > current.SEARCH_KEY){
+                while (current.right != null){
+                    current = current.right;
+                }
+            }
+        }
+        printNode(current);
+
+        // begin menu here to keep current set to correct node
+        int choice = 0;
+        do{
+            System.out.println("Press 1 to edit, 2 to delete, 3 to exit search: ");
+            choice = input.nextInt(); 
+        }while(choice != 1 && choice != 2);
+        
+        switch(choice){
+            case 1:
+                editNode(current);
+                System.out.println("entry has been changed to: ");
+                printNode(current);
+                break;
+            case 2: 
+                deleteNode(current);
+                System.out.println("Node has been deleted");
+                break;
+            default:
+                return;
+        }// end switch case
+    }// end search
+
+    private void editNode(TreeNode current){
+        fName = current.FIRST_NAME;
+        lName = current.LAST_NAME;
+        phoneNum = current.PHONE_NUM;
+        address = current.ADDRESS;
+        city = current.CITY;
+        state = current.STATE;
+        zip = current.STATE;
+
+        // note, due to pseudo-random nature of the searchkeys, search key will not be changed if phone number, first or last name
+        // are edited.
+
+        System.out.println("Enter 1 to edit First Name:");
+        System.out.println("Enter 2 to edit Last Name:");
+        System.out.println("Enter 3 to edit Phone Number:");
+        System.out.println("Enter 4 to edit Address:");
+        System.out.println("Enter 5 to edit City:");
+        System.out.println("Enter 6 to edit State:");
+        System.out.println("Enter 7 to edit ZIP:");
+
+        int choice = input.nextInt();
+
+        switch(choice){
+            case 1: 
+            System.out.println("Enter a new First Name: ");
+            current.FIRST_NAME = input.next();
+                break;
+            case 2: 
+            System.out.println("Enter a new Last Name: ");
+            current.LAST_NAME = input.next();
+                break;
+            case 3: 
+            System.out.println("Enter a new Phone Number: ");
+            current.PHONE_NUM = input.next();
+                break;
+            case 4: 
+            System.out.println("Enter a new Address: ");
+            current.ADDRESS = input.next();
+                break;
+            case 5: 
+            System.out.println("Enter a new City: ");
+            current.CITY = input.next();
+                break;
+            case 6: 
+            System.out.println("Enter a new State: ");
+            current.STATE = input.next();
+                break;
+            case 7: 
+            System.out.println("Enter a new ZIP: ");
+            current.ZIP = input.next();
+                break;
+            default:
+                return;
+        }// end case switch
+    } // end edit(current)
+
+    private void deleteNode(TreeNode current)throws NullPointerException{
+
+        key = current.SEARCH_KEY;
+
+        TreeNode temp = root;
+        
+        while (key != temp.left.SEARCH_KEY && key != temp.right.SEARCH_KEY){
+            if(key < temp.SEARCH_KEY){
+                try{
+                    temp = temp.left;
+                }catch(Exception NullPointerException){};           
+            }else if(key > temp.SEARCH_KEY){
+                try{
+                    temp = temp.right;
+                }catch(Exception NullPointerException){};
+            }
+        }// end while, temp .right or .left = current
+
+        // re assign pointers
+        if(temp.left.SEARCH_KEY == key){
+            if(temp.left.left != null){
+                if(temp.left.right != null){ // if current.right exits with current.left
+                    temp.left.left.right = temp.left.right; // affix current.right to currents replacement
+                }
+                temp.left = temp.left.left;
+            }else if(temp.left.right != null){ // if current.right exists but current.left does not
+                temp.left = temp.left.right;
+            }else{// if current.left = null
+                temp.left = null;
+            }
+        }
+
+        if(temp.right.SEARCH_KEY == key){
+            if(temp.right.right != null){
+                if(temp.right.left != null){
+                    temp.right.right.left = temp.right.left;
+                }
+                temp.right = temp.right.right;
+            }else if(temp.right.left != null){
+                temp.right = temp.right.left;
+            }else{
+                temp.right = null;
+            }
+        }
+
+        key = 0;
+    } // end delete node
+
 }
